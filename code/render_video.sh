@@ -14,6 +14,8 @@ do
            -c:a libopus -ac 1 -ab 24k \
            "${date}_${track}_${name}.webm"
 
+    python3 code/create_xml.py "${collection_dir}/clips.tsv" "$clip_no" "/tmp/${date}_${track}_${name}.xml"
+
     mkvpropedit "${collection_dir}/${date}_${track}_${name}.webm" \
-                --tags "${collection_dir}/.metadata/${date}_${track}_${name}.xml"
+                --tags "/tmp/${date}_${track}_${name}.xml"
 done

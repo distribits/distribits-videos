@@ -33,7 +33,6 @@ datalad containers-run \
         -o "${collection_dir}/${output_file}" \
         -i "${collection_dir}/clips.tsv" \
         -i "${collection_dir}/${input_file}" \
-        -i "${collection_dir}/.metadata/${output_file%.webm}.xml" \
         bash code/render_video.sh $collection_dir $clip_no
 
 # push result file content first - does not need a lock, no interaction with Git

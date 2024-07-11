@@ -1,5 +1,6 @@
 import argparse
 import csv
+from itertools import islice
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
@@ -25,64 +26,64 @@ def targetsTag(targetTypeValue):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("clip_list", type=Path, help="A tsv file with clip metadata")
+parser.add_argument("line", type=int, help="Number of line to use (1-based)")
+parser.add_argument("output_file", type=Path, help="Output XML file")
 args = parser.parse_args()
 
 tsvpath = args.clip_list
-metadata_dir = tsvpath.parent / ".metadata"
-
-if not metadata_dir.exists():
-    metadata_dir.mkdir()
+line_idx = args.line - 1
+xmlpath = args.output_file
 
 with tsvpath.open("rt") as tsvfile:
     # read entered metadata
     reader = csv.reader(tsvfile, delimiter="\t")
-    for row in reader:
-        (
-            source,
-            collection,
-            license,
-            date,
-            track,
-            start,
-            end,
-            name,
-            speakers,
-            title,
-            abstract,
-        ) = row
+    row = next(islice(reader, line_idx, line_idx+1))
 
-        # rewrite cc-by to canonical URL; assuming all use CC-BY-3.0
-        assert license == "CC-BY-3.0"
-        copyright = f"Distribits 2024 {license}"
-        license = "https://creativecommons.org/licenses/by/3.0/"
+    (
+        source,
+        collection,
+        license,
+        date,
+        track,
+        start,
+        end,
+        name,
+        speakers,
+        title,
+        abstract,
+    ) = row
 
-        # https://matroska.org/technical/tagging.html
-        # note: combining speakers into one artist tag to fit vlc
 
-        root = ET.Element("Tags")
+# rewrite cc-by to canonical URL; assuming all use CC-BY-3.0
+assert license == "CC-BY-3.0"
+copyright = f"Distribits 2024 {license}"
+license = "https://creativecommons.org/licenses/by/3.0/"
 
-        # movie (album) tags
-        movie_tags = ET.SubElement(root, "Tag")
-        movie_tags.extend((targetsTag(50), simpleTag("TITLE", collection)))
+# https://matroska.org/technical/tagging.html
 
-        # chapter (track) tags
-        chapter_tags = ET.SubElement(root, "Tag")
-        chapter_tags.extend(
-            (
-                targetsTag(30),
-                simpleTag("TITLE", title),
-                simpleTag("ARTIST", speakers),
-                simpleTag("PART_NUMBER", str(int(track))),
-                simpleTag("DATE_RECORDED", date),
-                simpleTag("LICENSE", license),
-                simpleTag("COPYRIGHT", copyright),
-            )
-        )
+root = ET.Element("Tags")
 
-        # save pretty-printed xml
+# movie (album) tags
+movie_tags = ET.SubElement(root, "Tag")
+movie_tags.extend((targetsTag(50), simpleTag("TITLE", collection)))
 
-        fname = f"{date}_{track}_{name}.xml"
-        tree = ET.ElementTree(root)
-        ET.indent(tree)
-        with metadata_dir.joinpath(fname).open("wt") as f:
-            tree.write(f, encoding="unicode", xml_declaration=True)
+# chapter (track) tags
+# note: combining speakers into one artist tag to fit vlc
+chapter_tags = ET.SubElement(root, "Tag")
+chapter_tags.extend(
+    (
+        targetsTag(30),
+        simpleTag("TITLE", title),
+        simpleTag("ARTIST", speakers),
+        simpleTag("PART_NUMBER", str(int(track))),
+        simpleTag("DATE_RECORDED", date),
+        simpleTag("LICENSE", license),
+        simpleTag("COPYRIGHT", copyright),
+    )
+)
+
+# save pretty-printed xml
+tree = ET.ElementTree(root)
+ET.indent(tree)
+with xmlpath.open("wt") as f:
+    tree.write(f, encoding="unicode", xml_declaration=True)
