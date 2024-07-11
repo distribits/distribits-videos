@@ -4,11 +4,16 @@ set -e -u
 # input parameter(s)
 clip_no=$1
 
-# parameters to be read from the environment variables
+# parameters to be read from the environment variables:
+#
 # $collection_dir  - directory with video files and clips.tsv
 # $dssource        - URL for DataLad clone
 # $storage_name    - name of special remote to pull / push
 # $dslockfile      - lock file for push, should be accessible to all jobs
+
+# parameters read from the environment by the render_video script:
+#
+# $n_threads OR $OMP_NUM_THREADS  - number of threads for SVT-AV1 to use when encoding
 
 datalad clone $dssource /tmp/distribits-videos
 cd /tmp/distribits-videos

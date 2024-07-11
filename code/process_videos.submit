@@ -1,7 +1,7 @@
 # The environment
 universe       = vanilla
 getenv         = True
-request_cpus   = 1
+request_cpus   = 4
 request_memory = 4G
 request_disk   = 4G
 
@@ -19,7 +19,6 @@ environment = "\
   collection_dir=distribits2024 \
   dssource='ria+file:///data/group/psyinf/distribits/test.ria#~distribits-videos' \
   storage_name=juseless-test-storage \
-  n_threads=1 \
   dslockfile=$ENV(PWD)/.condor_datalad_lock \
   "
 
