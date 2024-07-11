@@ -17,6 +17,10 @@ cd /tmp/distribits-videos
 git branch "clip-${clip_no}"
 git switch "clip-${clip_no}"
 
+# make local storage cost lower than web, and allow unverified downloads from there (url keys)
+git config --local "remote.${storage_name}.annex-cost" 150
+git config --local "remote.${storage_name}.annex-security-allow-unverified-downloads" ACKTHPPT
+
 # read input and output file from the tsv to have explicit i/o for datalad run
 # columns: *source* collection license *date* *track* start end *name* speakers title abstract
 input_file=$(awk -F '\t' -v row=$clip_no 'NR==row {print $1}' < "${collection_dir}/clips.tsv")
