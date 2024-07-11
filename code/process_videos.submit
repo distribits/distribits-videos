@@ -1,0 +1,31 @@
+# The environment
+universe       = vanilla
+getenv         = True
+request_cpus   = 1
+request_memory = 4G
+request_disk   = 4G
+
+# tell condor that a job is self contained and the executable
+# is enough to bootstrap the computation on the execute node
+should_transfer_files = yes
+# explicitly do not transfer anything back
+# we are using datalad for everything that matters
+transfer_output_files = ""
+
+# The actual condor-independent job script
+executable     = $ENV(PWD)/code/video_job.sh
+
+environment = "\
+  collection_dir=distribits2024 \
+  dssource='ria+file:///data/group/psyinf/distribits/test.ria#~distribits-videos' \
+  storage_name=juseless-test-storage \
+  n_threads=1 \
+  dslockfile=$ENV(PWD)/.condor_datalad_lock \
+  "
+
+# Logs
+log            = $ENV(HOME)/logs/$(Cluster).$(Process).log
+output         = $ENV(HOME)/logs/$(Cluster).$(Process).out
+error          = $ENV(HOME)/logs/$(Cluster).$(Process).err
+
+Queue 1 arguments in 1 2
