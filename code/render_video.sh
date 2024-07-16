@@ -14,18 +14,18 @@ else
 fi
 
 # read one line from clips.tsv
-sed "${clip_no}q;d" "${collection_dir}/clips.tsv" | while
-    IFS=$'\t' read -r source collection license date track start end name speakers title abstract;
-do
-    ffmpeg -y -i "${collection_dir}/${source}" \
-           -ss "$start" \
-           -to "$end" \
-           -c:v libsvtav1 -preset 6 -svtav1-params lp="$n_threads" \
-           -c:a libopus -ac 1 -ab 24k \
-           "${collection_dir}/${date}_${track}_${name}.webm"
+IFS=$'\t' read -r source collection license date track start end name speakers title abstract \
+   <<< $(awk -v row="$clip_no" "NR == row {print}" "${collection_dir}/clips.tsv")
 
-    python3 code/create_xml.py "${collection_dir}/clips.tsv" "$clip_no" "/tmp/${date}_${track}_${name}.xml"
+# convert
+ffmpeg -y -i "${collection_dir}/${source}" \
+       -ss "$start" \
+       -to "$end" \
+       -c:v libsvtav1 -preset 6 -svtav1-params lp="$n_threads" \
+       -c:a libopus -ac 1 -ab 24k \
+       "${collection_dir}/${date}_${track}_${name}.webm"
 
-    mkvpropedit "${collection_dir}/${date}_${track}_${name}.webm" \
-                --tags "all:/tmp/${date}_${track}_${name}.xml"
-done
+python3 code/create_xml.py "${collection_dir}/clips.tsv" "$clip_no" "/tmp/${date}_${track}_${name}.xml"
+
+mkvpropedit "${collection_dir}/${date}_${track}_${name}.webm" \
+            --tags "all:/tmp/${date}_${track}_${name}.xml"
