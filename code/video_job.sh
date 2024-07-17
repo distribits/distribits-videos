@@ -15,8 +15,10 @@ clip_no=$1
 #
 # $n_threads OR $OMP_NUM_THREADS  - number of threads for SVT-AV1 to use when encoding
 
-datalad clone $dssource /tmp/distribits-videos
+# make a temporary clone using annex.private to avoid recording availability in git-annex branch
+datalad -c annex.private=true clone $dssource /tmp/distribits-videos
 cd /tmp/distribits-videos
+git config annex.private=true
 
 # create and check out clip-specific branch
 git branch "clip-${clip_no}"
