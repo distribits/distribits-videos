@@ -18,7 +18,7 @@ clip_no=$1
 # make a temporary clone using annex.private to avoid recording availability in git-annex branch
 datalad -c annex.private=true clone $dssource /tmp/distribits-videos
 cd /tmp/distribits-videos
-git config annex.private=true
+git config annex.private true
 
 # create and check out clip-specific branch
 git branch "clip-${clip_no}"
