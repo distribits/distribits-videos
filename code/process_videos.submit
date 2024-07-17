@@ -17,8 +17,8 @@ executable     = $ENV(PWD)/code/video_job.sh
 
 environment = "\
   collection_dir=distribits2024 \
-  dssource='ria+file:///data/group/psyinf/distribits/test.ria#~distribits-videos' \
-  storage_name=juseless-test-storage \
+  dssource='ria+file:///data/group/psyinf/distribits/distribits.ria#~distribits-videos' \
+  storage_name=juseless-storage \
   dslockfile=$ENV(PWD)/.condor_datalad_lock \
   "
 
@@ -27,4 +27,4 @@ log            = $ENV(HOME)/logs/$(Cluster).$(Process).log
 output         = $ENV(HOME)/logs/$(Cluster).$(Process).out
 error          = $ENV(HOME)/logs/$(Cluster).$(Process).err
 
-Queue 1 arguments in 1 2
+Queue 1 arguments from seq 1 29 |
